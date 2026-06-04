@@ -209,15 +209,16 @@ class InstallerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title(f"{APP_NAME} — Installer")
-        self.root.geometry("560x620")
-        self.root.resizable(False, False)
+        self.root.geometry("560x700")
+        self.root.resizable(True, True)
+        self.root.minsize(520, 500)
         self.root.configure(bg=BG)
 
         # Center
         self.root.update_idletasks()
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
-        self.root.geometry(f"560x620+{(sw-560)//2}+{(sh-620)//2}")
+        self.root.geometry(f"560x700+{(sw-560)//2}+{(sh-700)//2}")
 
         self._build_ui()
         self.root.mainloop()
@@ -239,6 +240,32 @@ class InstallerApp:
             font=("Segoe UI", 10),
             bg=ACCENT, fg="#ddd8ff", anchor="w",
         ).pack(side="left", pady=(22, 0))
+
+        # Footer
+        footer = tk.Frame(self.root, bg=SURFACE, pady=14, padx=36)
+        footer.pack(fill="x", side="bottom")
+        tk.Frame(footer, bg=BORDER, height=1).pack(fill="x", side="top", pady=(0, 10))
+
+        self.status_var = tk.StringVar(value="Ready to install.")
+        tk.Label(
+            footer,
+            textvariable=self.status_var,
+            font=("Segoe UI", 9),
+            bg=SURFACE, fg=SUBTEXT,
+        ).pack(side="left")
+
+        self.install_btn = tk.Button(
+            footer,
+            text="Install & Launch",
+            font=("Segoe UI", 10, "bold"),
+            bg=ACCENT, fg="#ffffff",
+            activebackground=ACCENT_DIM,
+            relief="flat", bd=0,
+            padx=20, pady=8,
+            cursor="hand2",
+            command=self._start_install,
+        )
+        self.install_btn.pack(side="right")
 
         # Body
         body = tk.Frame(self.root, bg=BG, padx=36, pady=20)
@@ -350,10 +377,10 @@ class InstallerApp:
         log_scroll = tk.Scrollbar(log_frame, orient="vertical")
         self.log_text = tk.Text(
             log_frame,
-            font=("Consolas", 8),
-            bg=ENTRY_BG, fg=SUBTEXT,
+            font=("Consolas", 10),
+            bg=ENTRY_BG, fg=TEXT,
             relief="flat", bd=6,
-            height=5,
+            height=10,
             state="disabled",
             wrap="word",
             yscrollcommand=log_scroll.set,
@@ -361,32 +388,6 @@ class InstallerApp:
         log_scroll.config(command=self.log_text.yview)
         log_scroll.pack(side="right", fill="y")
         self.log_text.pack(fill="x")
-
-        # Footer
-        footer = tk.Frame(self.root, bg=SURFACE, pady=14, padx=36)
-        footer.pack(fill="x", side="bottom")
-        tk.Frame(footer, bg=BORDER, height=1).pack(fill="x", side="top", pady=(0, 10))
-
-        self.status_var = tk.StringVar(value="Ready to install.")
-        tk.Label(
-            footer,
-            textvariable=self.status_var,
-            font=("Segoe UI", 9),
-            bg=SURFACE, fg=SUBTEXT,
-        ).pack(side="left")
-
-        self.install_btn = tk.Button(
-            footer,
-            text="Install & Launch",
-            font=("Segoe UI", 10, "bold"),
-            bg=ACCENT, fg="#ffffff",
-            activebackground=ACCENT_DIM,
-            relief="flat", bd=0,
-            padx=20, pady=8,
-            cursor="hand2",
-            command=self._start_install,
-        )
-        self.install_btn.pack(side="right")
 
     def _log(self, msg: str):
         """Append a line to the log box (thread-safe)."""
